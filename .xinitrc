@@ -1,48 +1,79 @@
 #!/bin/sh
-#
-# ~/.xinitrc
-#
-# Executed by startx (run your window manager from here)
 
-if [ -d /etc/X11/xinit/xinitrc.d ]; then
-  for f in /etc/X11/xinit/xinitrc.d/*; do
-    [ -x "$f" ] && . "$f"
-  done
-  unset f
+userresources=$HOME/.Xresources
+usermodmap=$HOME/.Xmodmap
+sysresources=/etc/X11/xinit/.Xresources
+sysmodmap=/etc/X11/xinit/.Xmodmap
+
+# merge in defaults and keymaps
+
+if [ -f $sysresources ]; then
+    xrdb -merge $sysresources
 fi
 
-############################################################
-# keymap
-setxkbmap -option ctrl:swapcaps
+if [ -f $sysmodmap ]; then
+    xmodmap $sysmodmap
+fi
+
+if [ -f "$userresources" ]; then
+    xrdb -merge "$userresources"
+fi
+
+if [ -f "$usermodmap" ]; then
+    xmodmap "$usermodmap"
+fi
+
+# start some nice programs
+
+if [ -d /etc/X11/xinit/xinitrc.d ] ; then
+ for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+  [ -x "$f" ] && . "$f"
+ done
+ unset f
+fi
+
+
+# User config
+###############################################
+
+# Keymap
+setxkbmap -option ctrl:nocaps
 
 # fcitx
 export GTK_IM_MODULE=fcitx
-export XMODIFIERS=@im=fcitx
 export QT_IM_MODULE=fcitx
-fcitx -r &
+export XMODIFIERS=@im=fcitx
+fcitx
 
-# emacs daemon
-emacs -daemon &
+# statusbar
+while true; do
 
-# background
-feh --bg-scale ${HOME}/media/photos/wallpaper/polyGuana_001_by_emciem.jpg --no-fehbg
+# Power/Battery Status
+if [ "$( cat /sys/class/power_supply/AC/online )" -eq "1" ]; then
+        DWM_BATTERY="AC";
+        DWM_RENEW_INT=3;
+else
+        DWM_BATTERY=$(( `cat /sys/class/power_supply/BAT1/energy_now` * 100 / `cat /sys/class/power_supply/BAT1/energy_full` ));
+        DWM_RENEW_INT=30;
+fi;
 
-while true
-do
-        MEM=$(free -m |awk '/cache:/ {print $3"M" }')
-        VOL=$(amixer get Master | tail -1 | sed 's/.*\[\([0-9]*%\)\].*/\1/')
-        LOCALTIME=$(date +%a\ %b\ %d\ %H:%M)
-	TEM="$(($(cat /sys/class/thermal/thermal_zone0/temp) / 1000))C"
+# Memory
+DWM_MEM=$( free -m |awk '/Mem:/ {print $3"M" }' );
 
-	if acpi -a | grep off-line > /dev/null
-        then
-                BAT=$(acpi -b | awk '{ print $4 " " $5 }' | tr -d ',')
-	        xsetroot -name "Mem:$MEM Tem:$TEM Vol:$VOL Bat:$BAT $LOCALTIME"
-	else
-		xsetroot -name "Mem:$MEM Tem:$TEM Vol:$VOL $LOCALTIME"
-	fi
+# Thermal
+DWM_TEM="$(( `cat /sys/class/thermal/thermal_zone0/temp` / 1000 ))C"
 
-        sleep 10s
+# Volume Level
+DWM_VOL=$( amixer -c1 sget Master | awk -vORS=' ' '/Mono:/ {print($6$4)}' );
+
+# Date and Time
+DWM_CLOCK=$( date +%a\ %b\ %d\ %H:%M );
+
+# Overall output command
+DWM_STATUS="Power: [$DWM_BATTERY] | Mem: $DWM_MEM | TEM: $DWM_TEM| Vol: $DWM_VOL | $DWM_CLOCK";
+xsetroot -name "$DWM_STATUS";
+sleep $DWM_RENEW_INT;
+
 done &
 
 # Window Manager
