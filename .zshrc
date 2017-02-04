@@ -17,3 +17,14 @@ promptinit
 prompt adam2
 
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# some more ls aliases
+alias ls='ls --color=auto'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# emacs aliases
+alias en='emacs -nw'
+alias et='emacsclient -t -a ""'
+alias ec='emacsclient -c -a ""'
