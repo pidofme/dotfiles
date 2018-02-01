@@ -45,6 +45,9 @@ export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
 fcitx
 
+# For java programs
+export _JAVA_AWT_WM_NONREPARENTING=1
+
 # statusbar
 while true; do
 
