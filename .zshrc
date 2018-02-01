@@ -18,9 +18,11 @@ prompt adam2
 
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
+export PATH=~/workspace/dotfiles/bin:$PATH
+
 # some more ls aliases
 alias ls='ls --color=auto'
-alias ll='ls -alF'
+alias ll='ls -alhF'
 alias la='ls -A'
 alias l='ls -CF'
 
