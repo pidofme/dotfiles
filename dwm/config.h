@@ -63,8 +63,9 @@ static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-        { MODKEY|ShiftMask,             XK_s,      spawn,          {.v = slockcmd } },
+        { MODKEY|ShiftMask,             XK_l,      spawn,          {.v = slockcmd } },
         { MODKEY|ShiftMask,             XK_d,      spawn,          {.v = dictcmd } },
+        { MODKEY|ShiftMask,             XK_a,      spawn,          SHCMD("sleep 0.3; scrot -s ~/screenshots/%Y-%m-%d-%T-scrot.png") },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -114,4 +115,3 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
-

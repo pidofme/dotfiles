@@ -67,17 +67,19 @@ DWM_MEM=$( free -m |awk '/Mem:/ {print $3"M" }' );
 DWM_TEM="$(( `cat /sys/class/thermal/thermal_zone0/temp` / 1000 ))C"
 
 # Volume Level
-DWM_VOL=$( amixer -c1 sget Master | awk -vORS=' ' '/Mono:/ {print($6$4)}' );
+DWM_VOL=$( amixer -c1 sget Master | awk -vORS='' '/Mono:/ {print($6$4)}' );
 
 # Date and Time
 DWM_CLOCK=$( date +%a\ %b\ %d\ %H:%M );
 
 # Overall output command
-DWM_STATUS="Power: [$DWM_BATTERY] | Mem: $DWM_MEM | TEM: $DWM_TEM| Vol: $DWM_VOL | $DWM_CLOCK";
+DWM_STATUS="Power:[$DWM_BATTERY]|Mem:$DWM_MEM|TEM:$DWM_TEM|Vol:$DWM_VOL|$DWM_CLOCK";
 xsetroot -name "$DWM_STATUS";
 sleep $DWM_RENEW_INT;
 
 done &
 
 # Window Manager
-exec dwm
+while true; do
+    dwm
+done
